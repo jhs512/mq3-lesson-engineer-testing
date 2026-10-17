@@ -1,0 +1,936 @@
+{
+  "schema_version": 1,
+  "id": "engineer-testing",
+  "revision": "v1.0.0",
+  "title": "테스트 설계·통합·품질",
+  "description": "동등 분할·경계값·커버리지·스텁을 작은 테스트로 직접 돌려 봐요. 이어서 시험처럼 기법과 수준 이름을 적어요. 필수 문제 8개와 선택 도전 2개예요.",
+  "sources": [
+    "https://www.q-net.or.kr/pageLink.do?link=cst/cstReport&jmCd=1320&mcrtrNo=991",
+    "https://www.q-net.or.kr/pageLink.do?link=cst/cstReport&jmCd=1320&mcrtrNo=1453",
+    "https://iso25000.com/en/iso-25000-standards/iso-25010"
+  ],
+  "sections": [],
+  "review_enabled": false,
+  "tasks": [
+    {
+      "id": "partition-representative",
+      "title": "묶음마다 대표값을 하나씩 넣어요",
+      "goal": "자, 테스트 케이스(test case)는 입력과 기대 결과의 짝이에요. 기대 결과는 요구에서 정해요.\n같은 결과가 나올 입력끼리 묶고, 묶음마다 대표값을 하나씩 골라요. 이걸 동등 분할(equivalence partitioning)이라고 해요.\n요금 요구에는 어린이·어른·경로, 세 묶음이 있어요. 지금 케이스가 몇 묶음을 보는지 먼저 세어 보세요.\n\n준비 코드를 실행해 통과한 묶음을 읽어 보세요. 묶음 이름은 part 함수가 붙여요.\ncases 목록의 어른 줄 아래에 경로 묶음 대표값 `(70, senior),`를 더하세요.\n다시 실행하면 새 케이스가 실패해요. 테스트가 결함을 찾은 거예요.\n이번엔 함수를 고치지 않고 실패를 그대로 둬요.",
+      "language": "python",
+      "entry_file": "main.py",
+      "starter_code": "# 요구: 13세 미만은 어린이, 65세 미만은 어른, 65세 이상은 경로 요금이에요.\nkid = 5000\nadult = 10000\nsenior = 6000\n\n\n# 테스트할 함수예요. 나이를 받아 요금을 돌려줘요.\ndef fee(age):\n    # 13세 미만이면 어린이 요금이에요.\n    if age < 13:\n        return kid\n    # 13세 이상이면 어른 요금으로 보내요.\n    elif age >= 13:\n        return adult\n    # 나머지는 경로 요금이에요.\n    else:\n        return senior\n\n\n# 요구를 나눈 묶음표예요. 나이가 어느 묶음에 드는지 이름을 알려 줘요.\ndef part(age):\n    # 13세 미만은 어린이 묶음이에요.\n    if age < 13:\n        return '어린이'\n    # 65세 미만은 어른, 나머지는 경로 묶음이에요.\n    if age < 65:\n        return '어른'\n    return '경로'\n\n\n# 테스트 케이스예요. (입력 나이, 기대 요금)을 한 줄에 하나씩 적어요.\ncases = [\n    (8, kid),\n    (40, adult),\n]\n# 케이스를 하나씩 꺼내 두 값을 age와 want에 나눠 담아요.\nfor age, want in cases:\n    got = fee(age)\n    # 같으면 통과, 다르면 두 값을 함께 보여 줘요. 앞에는 묶음 이름을 붙여요.\n    if got == want:\n        print(part(age), '통과')\n    else:\n        print(part(age), '실패: 기대', want, '실제', got)\n",
+      "solution": "# 요구: 13세 미만은 어린이, 65세 미만은 어른, 65세 이상은 경로 요금이에요.\nkid = 5000\nadult = 10000\nsenior = 6000\n\n\n# 테스트할 함수예요. 나이를 받아 요금을 돌려줘요.\ndef fee(age):\n    # 13세 미만이면 어린이 요금이에요.\n    if age < 13:\n        return kid\n    # 13세 이상이면 어른 요금으로 보내요.\n    elif age >= 13:\n        return adult\n    # 나머지는 경로 요금이에요.\n    else:\n        return senior\n\n\n# 요구를 나눈 묶음표예요. 나이가 어느 묶음에 드는지 이름을 알려 줘요.\ndef part(age):\n    # 13세 미만은 어린이 묶음이에요.\n    if age < 13:\n        return '어린이'\n    # 65세 미만은 어른, 나머지는 경로 묶음이에요.\n    if age < 65:\n        return '어른'\n    return '경로'\n\n\n# 테스트 케이스예요. (입력 나이, 기대 요금)을 한 줄에 하나씩 적어요.\ncases = [\n    (8, kid),\n    (40, adult),\n    # 경로 묶음의 대표값이에요.\n    (70, senior),\n]\n# 케이스를 하나씩 꺼내 두 값을 age와 want에 나눠 담아요.\nfor age, want in cases:\n    got = fee(age)\n    # 같으면 통과, 다르면 두 값을 함께 보여 줘요. 앞에는 묶음 이름을 붙여요.\n    if got == want:\n        print(part(age), '통과')\n    else:\n        print(part(age), '실패: 기대', want, '실제', got)\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "어린이 통과\n어른 통과\n경로 실패: 기대 6000 실제 10000"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "어른 줄 아래에 (70, senior),를 넣어요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "# 요구: 13세 미만은 어린이, 65세 미만은 어른, 65세 이상은 경로 요금이에요.\nkid = 5000\nadult = 10000\nsenior = 6000\n\n\n# 테스트할 함수예요. 나이를 받아 요금을 돌려줘요.\ndef fee(age):\n    # 13세 미만이면 어린이 요금이에요.\n    if age < 13:\n        return kid\n    # 13세 이상이면 어른 요금으로 보내요.\n    elif age >= 13:\n        return adult\n    # 나머지는 경로 요금이에요.\n    else:\n        return senior\n\n\n# 요구를 나눈 묶음표예요. 나이가 어느 묶음에 드는지 이름을 알려 줘요.\ndef part(age):\n    # 13세 미만은 어린이 묶음이에요.\n    if age < 13:\n        return '어린이'\n    # 65세 미만은 어른, 나머지는 경로 묶음이에요.\n    if age < 65:\n        return '어른'\n    return '경로'\n\n\n# 테스트 케이스예요. (입력 나이, 기대 요금)을 한 줄에 하나씩 적어요.\ncases = [\n    (8, kid),\n    (40, adult),\n]\n# 케이스를 하나씩 꺼내 두 값을 age와 want에 나눠 담아요.\nfor age, want in cases:\n    got = fee(age)\n    # 같으면 통과, 다르면 두 값을 함께 보여 줘요. 앞에는 묶음 이름을 붙여요.\n    if got == want:\n        print(part(age), '통과')\n    else:\n        print(part(age), '실패: 기대', want, '실제', got)\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 어린이 통과 / 어른 통과"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 기대 결과를 실제 출력에서 베끼면 결함이 있어도 통과해요."
+        },
+        {
+          "action": "patch_code",
+          "before": "    (40, adult),\n",
+          "after": "    (40, adult),\n    # 경로 묶음의 대표값이에요.\n    (70, senior),\n",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요.  어른 통과 / 경로 실패: 기대 6000 실제 10000"
+        },
+        {
+          "action": "submit"
+        }
+      ],
+      "checker": "import ast\nimport builtins\nimport contextlib\nimport io\nimport math\nimport os\nfrom pathlib import Path\nimport shutil\nimport sys\nimport tempfile\nimport traceback\nimport warnings\n\nos.environ['MPLBACKEND'] = 'Agg'\n# Grading output is for the verdict only; font and library warnings would bury the reason.\nwarnings.filterwarnings('ignore')\nbuiltins.display = lambda *args, **kwargs: None\nreference = \"# 요구: 13세 미만은 어린이, 65세 미만은 어른, 65세 이상은 경로 요금이에요.\\nkid = 5000\\nadult = 10000\\nsenior = 6000\\n\\n\\n# 테스트할 함수예요. 나이를 받아 요금을 돌려줘요.\\ndef fee(age):\\n    # 13세 미만이면 어린이 요금이에요.\\n    if age < 13:\\n        return kid\\n    # 13세 이상이면 어른 요금으로 보내요.\\n    elif age >= 13:\\n        return adult\\n    # 나머지는 경로 요금이에요.\\n    else:\\n        return senior\\n\\n\\n# 요구를 나눈 묶음표예요. 나이가 어느 묶음에 드는지 이름을 알려 줘요.\\ndef part(age):\\n    # 13세 미만은 어린이 묶음이에요.\\n    if age < 13:\\n        return '어린이'\\n    # 65세 미만은 어른, 나머지는 경로 묶음이에요.\\n    if age < 65:\\n        return '어른'\\n    return '경로'\\n\\n\\n# 테스트 케이스예요. (입력 나이, 기대 요금)을 한 줄에 하나씩 적어요.\\ncases = [\\n    (8, kid),\\n    (40, adult),\\n    # 경로 묶음의 대표값이에요.\\n    (70, senior),\\n]\\n# 케이스를 하나씩 꺼내 두 값을 age와 want에 나눠 담아요.\\nfor age, want in cases:\\n    got = fee(age)\\n    # 같으면 통과, 다르면 두 값을 함께 보여 줘요. 앞에는 묶음 이름을 붙여요.\\n    if got == want:\\n        print(part(age), '통과')\\n    else:\\n        print(part(age), '실패: 기대', want, '실제', got)\\n\"\ncases = [{}, {'kid': 4000, 'adult': 9000, 'senior': 3000}, {'adult': 12000, 'senior': 7000}]\nnames = []\nbase_files = {}\nsource = open(sys.argv[1], encoding='utf8').read()\n\n\nclass Inputs(ast.NodeTransformer):\n    # Replace only the first prepared assignment to each changed name.\n    def __init__(self, values):\n        self.values = values\n        self.seen = set()\n\n    def visit_Assign(self, node):\n        if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):\n            name = node.targets[0].id\n            if name in self.values and name not in self.seen:\n                self.seen.add(name)\n                node.value = ast.parse(repr(self.values[name]), mode='eval').body\n        return node\n\n\ndef execute(text, values):\n    tree = ast.fix_missing_locations(Inputs(values).visit(ast.parse(text)))\n    scope = {'__name__': '__main__'}\n    output = io.StringIO()\n    with contextlib.redirect_stdout(output):\n        exec(compile(tree, 'main.py', 'exec'), scope)\n    plt = sys.modules.get('matplotlib.pyplot')\n    if plt is not None:\n        plt.close('all')\n    return output.getvalue().rstrip('\\n'), scope\n\n\ndef same(actual, expected):\n    pd = sys.modules.get('pandas')\n    if pd is not None and isinstance(expected, (pd.DataFrame, pd.Series, pd.Index)):\n        if type(actual) is not type(expected):\n            return False\n        try:\n            if isinstance(expected, pd.DataFrame):\n                pd.testing.assert_frame_equal(actual, expected)\n            elif isinstance(expected, pd.Series):\n                pd.testing.assert_series_equal(actual, expected)\n            else:\n                pd.testing.assert_index_equal(actual, expected)\n            return True\n        except AssertionError:\n            return False\n    np = sys.modules.get('numpy')\n    if np is not None and isinstance(expected, np.ndarray):\n        # Model and scaler outputs: same shape, and values equal up to float rounding.\n        if not isinstance(actual, np.ndarray) or actual.shape != expected.shape:\n            return False\n        if expected.dtype.kind in 'fc':\n            return bool(np.allclose(actual, expected, rtol=1e-7, atol=1e-9, equal_nan=True))\n        return bool(np.array_equal(actual, expected))\n    if isinstance(expected, float) and isinstance(actual, (int, float)):\n        return math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-12)\n    try:\n        return bool(actual == expected)\n    except Exception:\n        return False\n\n\ndef fail(message):\n    # The learner reads only this message, never the checker's own traceback.\n    print(message, file=sys.stderr)\n    sys.exit(1)\n\n\ndef snapshot(inputs):\n    # Files the run created or changed, such as a saved result CSV.\n    produced = {}\n    for path in Path('.').rglob('*'):\n        if path.is_file() and inputs.get(path.as_posix()) != path.read_bytes():\n            produced[path.as_posix()] = path.read_bytes()\n    return produced\n\n\ndef run_in_fresh_folder(files, text, values):\n    # Each run gets its own copy of the data, so files one run writes never help another.\n    home = os.getcwd()\n    folder = tempfile.mkdtemp(dir=home)\n    try:\n        os.chdir(folder)\n        inputs = {}\n        for path, content in files.items():\n            target = Path(path)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_text(content, encoding='utf8')\n            inputs[target.as_posix()] = target.read_bytes()\n        output, scope = execute(text, values)\n        return output, scope, snapshot(inputs)\n    finally:\n        os.chdir(home)\n        shutil.rmtree(folder, ignore_errors=True)\n\n\ndef describe(case):\n    parts = [name + ' = ' + repr(value) for name, value in case.items() if name != 'files']\n    parts += [path + ' 내용' for path in case.get('files', {})]\n    return ', '.join(parts)\n\n\nMESSAGES = {'__figures__': '그래프의 종류·축 이름·값이 기준 그래프와 달라요. 바뀐 자료로도 같은 그래프를 그리세요.'}\nfor index, case in enumerate(cases):\n    values = {k: v for k, v in case.items() if k != 'files'}\n    files = {**base_files, **case.get('files', {})}\n    expected, wanted, made = run_in_fresh_folder(files, reference, values)\n    changed = '준비 값을 ' + describe(case) + '(으)로 바꾸면 '\n    try:\n        actual, scope, produced = run_in_fresh_folder(files, source, values)\n    except SystemExit:\n        fail('코드가 exit로 중간에 끝났어요. 끝까지 실행되게 하세요.')\n    except BaseException as error:\n        reason = ''.join(traceback.format_exception_only(type(error), error)).strip()\n        fail(('코드를 실행하면' if index == 0 else changed.rstrip()) + ' 오류가 나요.\\n' + reason)\n    if index == 0:\n        problem = '실행 결과가 기대와 달라요.'\n    else:\n        problem = changed + '결과가 달라요.\\n값이나 자료가 바뀌어도 맞는 방법인지 확인하세요.'\n    if actual != expected:\n        fail(problem + '\\n기대 출력:\\n' + expected[-600:] + '\\n실제 출력:\\n' + actual[-600:])\n    for name in names:\n        if name not in scope:\n            fail(name + '에 결과를 담아 주세요.')\n        if not same(scope[name], wanted[name]):\n            fail(problem + '\\n' + MESSAGES.get(name, name + '의 값이 기대와 달라요.'))\n    for path in sorted(made):\n        if path not in produced:\n            fail(problem + '\\n' + path + ' 파일을 저장하지 않았어요.')\n        if produced[path] != made[path]:\n            fail(problem + '\\n저장한 ' + path + ' 파일의 내용이 기대와 달라요.')\nprint('준비 값과 자료를 바꿔도 같은 원리로 계산했어요.')\n"
+    },
+    {
+      "id": "boundary-values",
+      "title": "경계와 그 앞뒤를 넣어요",
+      "goal": "결함은 묶음의 경계에 자주 숨어요. 이상과 초과를 헷갈리기 쉽거든요.\n그래서 경계값과 바로 앞뒤 값을 넣어요. 이걸 경계값 분석(boundary value analysis)이라고 해요.\n기대 결과를 알려 주는 기준은 테스트 오라클(test oracle)이에요. 여기선 요구를 옮긴 expected 함수예요.\n\n준비 코드를 실행해 보세요. 두 대표값은 모두 통과해요.\nscores를 `[cut - 1, cut, cut + 1]`로 바꿔 다시 실행하세요.\n숫자 대신 cut으로 적어야 요구가 바뀌어도 경계를 따라가요.\n실패가 나오면 결함을 찾은 거예요. judge는 고치지 말고 그대로 두세요.",
+      "language": "python",
+      "entry_file": "main.py",
+      "starter_code": "# 요구: 점수가 cut점 이상이면 합격이에요.\ncut = 60\n\n\n# 테스트할 함수예요. 점수를 받아 합격 여부를 돌려줘요.\ndef judge(score):\n    # cut보다 크면 합격이라고 적었어요.\n    if score > cut:\n        return '합격'\n    return '불합격'\n\n\n# 테스트 오라클이에요. 요구 문장 그대로 기대 결과를 정해요.\ndef expected(score):\n    # 이상이니까 cut점도 합격이에요.\n    if score >= cut:\n        return '합격'\n    return '불합격'\n\n\n# 테스트할 점수 목록이에요. 어떤 값을 넣을지 고르는 게 테스트 설계예요.\nscores = [cut - 20, cut + 20]\nfor s in scores:\n    # 실제 결과와 오라클의 기대 결과를 비교해요.\n    got = judge(s)\n    want = expected(s)\n    if got == want:\n        print(s, '통과')\n    else:\n        print(s, '실패: 기대', want, '실제', got)\n",
+      "solution": "# 요구: 점수가 cut점 이상이면 합격이에요.\ncut = 60\n\n\n# 테스트할 함수예요. 점수를 받아 합격 여부를 돌려줘요.\ndef judge(score):\n    # cut보다 크면 합격이라고 적었어요.\n    if score > cut:\n        return '합격'\n    return '불합격'\n\n\n# 테스트 오라클이에요. 요구 문장 그대로 기대 결과를 정해요.\ndef expected(score):\n    # 이상이니까 cut점도 합격이에요.\n    if score >= cut:\n        return '합격'\n    return '불합격'\n\n\n# 테스트할 점수 목록이에요. 어떤 값을 넣을지 고르는 게 테스트 설계예요.\nscores = [cut - 1, cut, cut + 1]\nfor s in scores:\n    # 실제 결과와 오라클의 기대 결과를 비교해요.\n    got = judge(s)\n    want = expected(s)\n    if got == want:\n        print(s, '통과')\n    else:\n        print(s, '실패: 기대', want, '실제', got)\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "59 통과\n60 실패: 기대 합격 실제 불합격\n61 통과"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "scores = [cut - 1, cut, cut + 1]로 바꿔요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "# 요구: 점수가 cut점 이상이면 합격이에요.\ncut = 60\n\n\n# 테스트할 함수예요. 점수를 받아 합격 여부를 돌려줘요.\ndef judge(score):\n    # cut보다 크면 합격이라고 적었어요.\n    if score > cut:\n        return '합격'\n    return '불합격'\n\n\n# 테스트 오라클이에요. 요구 문장 그대로 기대 결과를 정해요.\ndef expected(score):\n    # 이상이니까 cut점도 합격이에요.\n    if score >= cut:\n        return '합격'\n    return '불합격'\n\n\n# 테스트할 점수 목록이에요. 어떤 값을 넣을지 고르는 게 테스트 설계예요.\nscores = [cut - 20, cut + 20]\nfor s in scores:\n    # 실제 결과와 오라클의 기대 결과를 비교해요.\n    got = judge(s)\n    want = expected(s)\n    if got == want:\n        print(s, '통과')\n    else:\n        print(s, '실패: 기대', want, '실제', got)\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 40 통과 / 80 통과"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 경계값 자체를 빼고 앞뒤만 넣으면 이 결함을 놓쳐요."
+        },
+        {
+          "action": "patch_code",
+          "before": "scores = [cut - 20, cut + 20]",
+          "after": "scores = [cut - 1, cut, cut + 1]",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 통과 / 60 실패: 기대 합격 실제 불합격 / 61 통과"
+        },
+        {
+          "action": "submit"
+        }
+      ],
+      "checker": "import ast\nimport builtins\nimport contextlib\nimport io\nimport math\nimport os\nfrom pathlib import Path\nimport shutil\nimport sys\nimport tempfile\nimport traceback\nimport warnings\n\nos.environ['MPLBACKEND'] = 'Agg'\n# Grading output is for the verdict only; font and library warnings would bury the reason.\nwarnings.filterwarnings('ignore')\nbuiltins.display = lambda *args, **kwargs: None\nreference = \"# 요구: 점수가 cut점 이상이면 합격이에요.\\ncut = 60\\n\\n\\n# 테스트할 함수예요. 점수를 받아 합격 여부를 돌려줘요.\\ndef judge(score):\\n    # cut보다 크면 합격이라고 적었어요.\\n    if score > cut:\\n        return '합격'\\n    return '불합격'\\n\\n\\n# 테스트 오라클이에요. 요구 문장 그대로 기대 결과를 정해요.\\ndef expected(score):\\n    # 이상이니까 cut점도 합격이에요.\\n    if score >= cut:\\n        return '합격'\\n    return '불합격'\\n\\n\\n# 테스트할 점수 목록이에요. 어떤 값을 넣을지 고르는 게 테스트 설계예요.\\nscores = [cut - 1, cut, cut + 1]\\nfor s in scores:\\n    # 실제 결과와 오라클의 기대 결과를 비교해요.\\n    got = judge(s)\\n    want = expected(s)\\n    if got == want:\\n        print(s, '통과')\\n    else:\\n        print(s, '실패: 기대', want, '실제', got)\\n\"\ncases = [{}, {'cut': 70}, {'cut': 45}]\nnames = []\nbase_files = {}\nsource = open(sys.argv[1], encoding='utf8').read()\n\n\nclass Inputs(ast.NodeTransformer):\n    # Replace only the first prepared assignment to each changed name.\n    def __init__(self, values):\n        self.values = values\n        self.seen = set()\n\n    def visit_Assign(self, node):\n        if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):\n            name = node.targets[0].id\n            if name in self.values and name not in self.seen:\n                self.seen.add(name)\n                node.value = ast.parse(repr(self.values[name]), mode='eval').body\n        return node\n\n\ndef execute(text, values):\n    tree = ast.fix_missing_locations(Inputs(values).visit(ast.parse(text)))\n    scope = {'__name__': '__main__'}\n    output = io.StringIO()\n    with contextlib.redirect_stdout(output):\n        exec(compile(tree, 'main.py', 'exec'), scope)\n    plt = sys.modules.get('matplotlib.pyplot')\n    if plt is not None:\n        plt.close('all')\n    return output.getvalue().rstrip('\\n'), scope\n\n\ndef same(actual, expected):\n    pd = sys.modules.get('pandas')\n    if pd is not None and isinstance(expected, (pd.DataFrame, pd.Series, pd.Index)):\n        if type(actual) is not type(expected):\n            return False\n        try:\n            if isinstance(expected, pd.DataFrame):\n                pd.testing.assert_frame_equal(actual, expected)\n            elif isinstance(expected, pd.Series):\n                pd.testing.assert_series_equal(actual, expected)\n            else:\n                pd.testing.assert_index_equal(actual, expected)\n            return True\n        except AssertionError:\n            return False\n    np = sys.modules.get('numpy')\n    if np is not None and isinstance(expected, np.ndarray):\n        # Model and scaler outputs: same shape, and values equal up to float rounding.\n        if not isinstance(actual, np.ndarray) or actual.shape != expected.shape:\n            return False\n        if expected.dtype.kind in 'fc':\n            return bool(np.allclose(actual, expected, rtol=1e-7, atol=1e-9, equal_nan=True))\n        return bool(np.array_equal(actual, expected))\n    if isinstance(expected, float) and isinstance(actual, (int, float)):\n        return math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-12)\n    try:\n        return bool(actual == expected)\n    except Exception:\n        return False\n\n\ndef fail(message):\n    # The learner reads only this message, never the checker's own traceback.\n    print(message, file=sys.stderr)\n    sys.exit(1)\n\n\ndef snapshot(inputs):\n    # Files the run created or changed, such as a saved result CSV.\n    produced = {}\n    for path in Path('.').rglob('*'):\n        if path.is_file() and inputs.get(path.as_posix()) != path.read_bytes():\n            produced[path.as_posix()] = path.read_bytes()\n    return produced\n\n\ndef run_in_fresh_folder(files, text, values):\n    # Each run gets its own copy of the data, so files one run writes never help another.\n    home = os.getcwd()\n    folder = tempfile.mkdtemp(dir=home)\n    try:\n        os.chdir(folder)\n        inputs = {}\n        for path, content in files.items():\n            target = Path(path)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_text(content, encoding='utf8')\n            inputs[target.as_posix()] = target.read_bytes()\n        output, scope = execute(text, values)\n        return output, scope, snapshot(inputs)\n    finally:\n        os.chdir(home)\n        shutil.rmtree(folder, ignore_errors=True)\n\n\ndef describe(case):\n    parts = [name + ' = ' + repr(value) for name, value in case.items() if name != 'files']\n    parts += [path + ' 내용' for path in case.get('files', {})]\n    return ', '.join(parts)\n\n\nMESSAGES = {'__figures__': '그래프의 종류·축 이름·값이 기준 그래프와 달라요. 바뀐 자료로도 같은 그래프를 그리세요.'}\nfor index, case in enumerate(cases):\n    values = {k: v for k, v in case.items() if k != 'files'}\n    files = {**base_files, **case.get('files', {})}\n    expected, wanted, made = run_in_fresh_folder(files, reference, values)\n    changed = '준비 값을 ' + describe(case) + '(으)로 바꾸면 '\n    try:\n        actual, scope, produced = run_in_fresh_folder(files, source, values)\n    except SystemExit:\n        fail('코드가 exit로 중간에 끝났어요. 끝까지 실행되게 하세요.')\n    except BaseException as error:\n        reason = ''.join(traceback.format_exception_only(type(error), error)).strip()\n        fail(('코드를 실행하면' if index == 0 else changed.rstrip()) + ' 오류가 나요.\\n' + reason)\n    if index == 0:\n        problem = '실행 결과가 기대와 달라요.'\n    else:\n        problem = changed + '결과가 달라요.\\n값이나 자료가 바뀌어도 맞는 방법인지 확인하세요.'\n    if actual != expected:\n        fail(problem + '\\n기대 출력:\\n' + expected[-600:] + '\\n실제 출력:\\n' + actual[-600:])\n    for name in names:\n        if name not in scope:\n            fail(name + '에 결과를 담아 주세요.')\n        if not same(scope[name], wanted[name]):\n            fail(problem + '\\n' + MESSAGES.get(name, name + '의 값이 기대와 달라요.'))\n    for path in sorted(made):\n        if path not in produced:\n            fail(problem + '\\n' + path + ' 파일을 저장하지 않았어요.')\n        if produced[path] != made[path]:\n            fail(problem + '\\n저장한 ' + path + ' 파일의 내용이 기대와 달라요.')\nprint('준비 값과 자료를 바꿔도 같은 원리로 계산했어요.')\n"
+    },
+    {
+      "id": "statement-coverage",
+      "title": "문장 커버리지를 세어 봐요",
+      "goal": "코드 구조를 보고 테스트를 고르면 화이트박스 테스트예요. 요구만 보고 고르면 블랙박스 테스트고요.\n문장 커버리지(statement coverage)는 실행된 문장의 비율이에요.\n여기선 번호를 붙인 문장을 실행하기 직전에 ran에 번호를 넣어요. if 줄은 늘 실행돼서 번호를 뺐어요.\n\n준비 코드를 실행해 빠진 문장 번호를 찾으세요.\n테스트를 하나만 두고 4 / 4를 만드세요. 총액 10000을 40000으로 바꾸면 돼요.\n여기엔 else 없는 if만 있어요. 조건이 모두 참인 입력 하나로 다 실행돼요.",
+      "language": "python",
+      "entry_file": "main.py",
+      "starter_code": "# 실행된 문장 번호를 모아 둘 집합이에요.\nran = set()\n# 요구: 기본 배송비는 base원이에요.\n# sale_from원 이상 사면 1000원을 빼고, 회원은 반값이에요.\nbase = 3000\nsale_from = 30000\n\n\n# 테스트할 함수예요. 번호를 붙인 문장을 실행하기 직전에 ran에 번호를 넣어요.\ndef ship(total, member):\n    # 문장 1: 기본 배송비로 시작해요.\n    ran.add(1)\n    fee = base\n    if total >= sale_from:\n        # 문장 2: 많이 사면 1000원을 빼요.\n        ran.add(2)\n        fee = fee - 1000\n    if member:\n        # 문장 3: 회원은 반값이에요. //는 몫만 남겨요.\n        ran.add(3)\n        fee = fee // 2\n    # 문장 4: 배송비를 돌려줘요.\n    ran.add(4)\n    return fee\n\n\n# 테스트 입력이에요. 괄호 하나가 (총액, 회원 여부) 한 묶음이에요.\ntests = [(10000, True)]\n# 묶음을 하나씩 꺼내 두 값을 total과 member에 나눠 담아요.\nfor total, member in tests:\n    print('배송비:', ship(total, member))\n# 번호를 붙인 문장 4개 중 실행된 것을 작은 번호부터 보여 줘요.\nprint('실행된 문장:', sorted(ran))\nprint('문장 커버리지:', len(ran), '/ 4')\n",
+      "solution": "# 실행된 문장 번호를 모아 둘 집합이에요.\nran = set()\n# 요구: 기본 배송비는 base원이에요.\n# sale_from원 이상 사면 1000원을 빼고, 회원은 반값이에요.\nbase = 3000\nsale_from = 30000\n\n\n# 테스트할 함수예요. 번호를 붙인 문장을 실행하기 직전에 ran에 번호를 넣어요.\ndef ship(total, member):\n    # 문장 1: 기본 배송비로 시작해요.\n    ran.add(1)\n    fee = base\n    if total >= sale_from:\n        # 문장 2: 많이 사면 1000원을 빼요.\n        ran.add(2)\n        fee = fee - 1000\n    if member:\n        # 문장 3: 회원은 반값이에요. //는 몫만 남겨요.\n        ran.add(3)\n        fee = fee // 2\n    # 문장 4: 배송비를 돌려줘요.\n    ran.add(4)\n    return fee\n\n\n# 테스트 입력이에요. 괄호 하나가 (총액, 회원 여부) 한 묶음이에요.\ntests = [(40000, True)]\n# 묶음을 하나씩 꺼내 두 값을 total과 member에 나눠 담아요.\nfor total, member in tests:\n    print('배송비:', ship(total, member))\n# 번호를 붙인 문장 4개 중 실행된 것을 작은 번호부터 보여 줘요.\nprint('실행된 문장:', sorted(ran))\nprint('문장 커버리지:', len(ran), '/ 4')\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "배송비: 1000\n실행된 문장: [1, 2, 3, 4]\n문장 커버리지: 4 / 4"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "tests = [(40000, True)]로 바꿔요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "# 실행된 문장 번호를 모아 둘 집합이에요.\nran = set()\n# 요구: 기본 배송비는 base원이에요.\n# sale_from원 이상 사면 1000원을 빼고, 회원은 반값이에요.\nbase = 3000\nsale_from = 30000\n\n\n# 테스트할 함수예요. 번호를 붙인 문장을 실행하기 직전에 ran에 번호를 넣어요.\ndef ship(total, member):\n    # 문장 1: 기본 배송비로 시작해요.\n    ran.add(1)\n    fee = base\n    if total >= sale_from:\n        # 문장 2: 많이 사면 1000원을 빼요.\n        ran.add(2)\n        fee = fee - 1000\n    if member:\n        # 문장 3: 회원은 반값이에요. //는 몫만 남겨요.\n        ran.add(3)\n        fee = fee // 2\n    # 문장 4: 배송비를 돌려줘요.\n    ran.add(4)\n    return fee\n\n\n# 테스트 입력이에요. 괄호 하나가 (총액, 회원 여부) 한 묶음이에요.\ntests = [(10000, True)]\n# 묶음을 하나씩 꺼내 두 값을 total과 member에 나눠 담아요.\nfor total, member in tests:\n    print('배송비:', ship(total, member))\n# 번호를 붙인 문장 4개 중 실행된 것을 작은 번호부터 보여 줘요.\nprint('실행된 문장:', sorted(ran))\nprint('문장 커버리지:', len(ran), '/ 4')\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 된 문장: [1, 3, 4] / 문장 커버리지: 3 / 4"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 회원 여부까지 False로 바꾸면 이번엔 문장 3이 빠져요."
+        },
+        {
+          "action": "patch_code",
+          "before": "tests = [(10000, True)]",
+          "after": "tests = [(40000, True)]",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 장: [1, 2, 3, 4] / 문장 커버리지: 4 / 4"
+        },
+        {
+          "action": "submit"
+        }
+      ],
+      "checker": "import ast\nimport builtins\nimport contextlib\nimport io\nimport math\nimport os\nfrom pathlib import Path\nimport shutil\nimport sys\nimport tempfile\nimport traceback\nimport warnings\n\nos.environ['MPLBACKEND'] = 'Agg'\n# Grading output is for the verdict only; font and library warnings would bury the reason.\nwarnings.filterwarnings('ignore')\nbuiltins.display = lambda *args, **kwargs: None\nreference = \"# 실행된 문장 번호를 모아 둘 집합이에요.\\nran = set()\\n# 요구: 기본 배송비는 base원이에요.\\n# sale_from원 이상 사면 1000원을 빼고, 회원은 반값이에요.\\nbase = 3000\\nsale_from = 30000\\n\\n\\n# 테스트할 함수예요. 번호를 붙인 문장을 실행하기 직전에 ran에 번호를 넣어요.\\ndef ship(total, member):\\n    # 문장 1: 기본 배송비로 시작해요.\\n    ran.add(1)\\n    fee = base\\n    if total >= sale_from:\\n        # 문장 2: 많이 사면 1000원을 빼요.\\n        ran.add(2)\\n        fee = fee - 1000\\n    if member:\\n        # 문장 3: 회원은 반값이에요. //는 몫만 남겨요.\\n        ran.add(3)\\n        fee = fee // 2\\n    # 문장 4: 배송비를 돌려줘요.\\n    ran.add(4)\\n    return fee\\n\\n\\n# 테스트 입력이에요. 괄호 하나가 (총액, 회원 여부) 한 묶음이에요.\\ntests = [(40000, True)]\\n# 묶음을 하나씩 꺼내 두 값을 total과 member에 나눠 담아요.\\nfor total, member in tests:\\n    print('배송비:', ship(total, member))\\n# 번호를 붙인 문장 4개 중 실행된 것을 작은 번호부터 보여 줘요.\\nprint('실행된 문장:', sorted(ran))\\nprint('문장 커버리지:', len(ran), '/ 4')\\n\"\ncases = [{}, {'base': 4000}, {'base': 5000, 'sale_from': 20000}]\nnames = []\nbase_files = {}\nsource = open(sys.argv[1], encoding='utf8').read()\n\n\nclass Inputs(ast.NodeTransformer):\n    # Replace only the first prepared assignment to each changed name.\n    def __init__(self, values):\n        self.values = values\n        self.seen = set()\n\n    def visit_Assign(self, node):\n        if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):\n            name = node.targets[0].id\n            if name in self.values and name not in self.seen:\n                self.seen.add(name)\n                node.value = ast.parse(repr(self.values[name]), mode='eval').body\n        return node\n\n\ndef execute(text, values):\n    tree = ast.fix_missing_locations(Inputs(values).visit(ast.parse(text)))\n    scope = {'__name__': '__main__'}\n    output = io.StringIO()\n    with contextlib.redirect_stdout(output):\n        exec(compile(tree, 'main.py', 'exec'), scope)\n    plt = sys.modules.get('matplotlib.pyplot')\n    if plt is not None:\n        plt.close('all')\n    return output.getvalue().rstrip('\\n'), scope\n\n\ndef same(actual, expected):\n    pd = sys.modules.get('pandas')\n    if pd is not None and isinstance(expected, (pd.DataFrame, pd.Series, pd.Index)):\n        if type(actual) is not type(expected):\n            return False\n        try:\n            if isinstance(expected, pd.DataFrame):\n                pd.testing.assert_frame_equal(actual, expected)\n            elif isinstance(expected, pd.Series):\n                pd.testing.assert_series_equal(actual, expected)\n            else:\n                pd.testing.assert_index_equal(actual, expected)\n            return True\n        except AssertionError:\n            return False\n    np = sys.modules.get('numpy')\n    if np is not None and isinstance(expected, np.ndarray):\n        # Model and scaler outputs: same shape, and values equal up to float rounding.\n        if not isinstance(actual, np.ndarray) or actual.shape != expected.shape:\n            return False\n        if expected.dtype.kind in 'fc':\n            return bool(np.allclose(actual, expected, rtol=1e-7, atol=1e-9, equal_nan=True))\n        return bool(np.array_equal(actual, expected))\n    if isinstance(expected, float) and isinstance(actual, (int, float)):\n        return math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-12)\n    try:\n        return bool(actual == expected)\n    except Exception:\n        return False\n\n\ndef fail(message):\n    # The learner reads only this message, never the checker's own traceback.\n    print(message, file=sys.stderr)\n    sys.exit(1)\n\n\ndef snapshot(inputs):\n    # Files the run created or changed, such as a saved result CSV.\n    produced = {}\n    for path in Path('.').rglob('*'):\n        if path.is_file() and inputs.get(path.as_posix()) != path.read_bytes():\n            produced[path.as_posix()] = path.read_bytes()\n    return produced\n\n\ndef run_in_fresh_folder(files, text, values):\n    # Each run gets its own copy of the data, so files one run writes never help another.\n    home = os.getcwd()\n    folder = tempfile.mkdtemp(dir=home)\n    try:\n        os.chdir(folder)\n        inputs = {}\n        for path, content in files.items():\n            target = Path(path)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_text(content, encoding='utf8')\n            inputs[target.as_posix()] = target.read_bytes()\n        output, scope = execute(text, values)\n        return output, scope, snapshot(inputs)\n    finally:\n        os.chdir(home)\n        shutil.rmtree(folder, ignore_errors=True)\n\n\ndef describe(case):\n    parts = [name + ' = ' + repr(value) for name, value in case.items() if name != 'files']\n    parts += [path + ' 내용' for path in case.get('files', {})]\n    return ', '.join(parts)\n\n\nMESSAGES = {'__figures__': '그래프의 종류·축 이름·값이 기준 그래프와 달라요. 바뀐 자료로도 같은 그래프를 그리세요.'}\nfor index, case in enumerate(cases):\n    values = {k: v for k, v in case.items() if k != 'files'}\n    files = {**base_files, **case.get('files', {})}\n    expected, wanted, made = run_in_fresh_folder(files, reference, values)\n    changed = '준비 값을 ' + describe(case) + '(으)로 바꾸면 '\n    try:\n        actual, scope, produced = run_in_fresh_folder(files, source, values)\n    except SystemExit:\n        fail('코드가 exit로 중간에 끝났어요. 끝까지 실행되게 하세요.')\n    except BaseException as error:\n        reason = ''.join(traceback.format_exception_only(type(error), error)).strip()\n        fail(('코드를 실행하면' if index == 0 else changed.rstrip()) + ' 오류가 나요.\\n' + reason)\n    if index == 0:\n        problem = '실행 결과가 기대와 달라요.'\n    else:\n        problem = changed + '결과가 달라요.\\n값이나 자료가 바뀌어도 맞는 방법인지 확인하세요.'\n    if actual != expected:\n        fail(problem + '\\n기대 출력:\\n' + expected[-600:] + '\\n실제 출력:\\n' + actual[-600:])\n    for name in names:\n        if name not in scope:\n            fail(name + '에 결과를 담아 주세요.')\n        if not same(scope[name], wanted[name]):\n            fail(problem + '\\n' + MESSAGES.get(name, name + '의 값이 기대와 달라요.'))\n    for path in sorted(made):\n        if path not in produced:\n            fail(problem + '\\n' + path + ' 파일을 저장하지 않았어요.')\n        if produced[path] != made[path]:\n            fail(problem + '\\n저장한 ' + path + ' 파일의 내용이 기대와 달라요.')\nprint('준비 값과 자료를 바꿔도 같은 원리로 계산했어요.')\n"
+    },
+    {
+      "id": "decision-coverage",
+      "title": "문장을 다 지나도 결정은 남아요",
+      "goal": "결정(decision)은 if처럼 참·거짓에 따라 갈라지는 곳이에요.\n결정 커버리지(decision coverage)는 결정의 결과를 세어요. 결정마다 참과 거짓이 다 나와야 100%예요. 분기 커버리지라고도 해요.\n여기선 결정 결과를 seen에 넣어요. 결정이 2개라 나올 결과는 4가지예요.\n\n준비 코드를 실행해 보세요. 앞 문제에서 문장 커버리지가 100%였던 테스트예요.\ntests를 `[(40000, True), (10000, False)]`로 바꾸세요. 괄호 사이 쉼표를 잊지 마세요.\n다시 실행해서 나온 결과가 몇 가지로 늘었는지 보세요.",
+      "language": "python",
+      "entry_file": "main.py",
+      "starter_code": "# 결정마다 나온 결과(참·거짓)를 모아 둘 집합이에요.\nseen = set()\n# 요구는 앞 문제와 같아요.\nbase = 3000\nsale_from = 30000\n\n\n# 결정 결과를 먼저 변수에 담고, 기록한 다음 갈라져요.\ndef ship(total, member):\n    # 기본 배송비로 시작해요.\n    fee = base\n    # 결정 A: 총액이 기준 이상인가요? 비교한 결과 True나 False가 big에 담겨요.\n    big = total >= sale_from\n    # (결정 이름, 참·거짓) 짝을 기록해요.\n    seen.add(('A', big))\n    # 참이면 1000원을 빼요.\n    if big:\n        fee = fee - 1000\n    # 결정 B: 회원인가요? 참이면 반값이에요.\n    seen.add(('B', member))\n    if member:\n        fee = fee // 2\n    return fee\n\n\n# 테스트 입력이에요. 첫 묶음은 앞 문제에서 문장 커버리지 100%를 만든 입력이에요.\ntests = [(40000, True)]\nfor total, member in tests:\n    print('배송비:', ship(total, member))\n# 결정 2개의 참·거짓, 모두 4가지 중 몇 가지가 나왔는지 봐요.\n# 정렬하면 결정마다 False가 True보다 앞에 와요.\nprint('나온 결과:', sorted(seen))\nprint('결정 커버리지:', len(seen), '/ 4')\n",
+      "solution": "# 결정마다 나온 결과(참·거짓)를 모아 둘 집합이에요.\nseen = set()\n# 요구는 앞 문제와 같아요.\nbase = 3000\nsale_from = 30000\n\n\n# 결정 결과를 먼저 변수에 담고, 기록한 다음 갈라져요.\ndef ship(total, member):\n    # 기본 배송비로 시작해요.\n    fee = base\n    # 결정 A: 총액이 기준 이상인가요? 비교한 결과 True나 False가 big에 담겨요.\n    big = total >= sale_from\n    # (결정 이름, 참·거짓) 짝을 기록해요.\n    seen.add(('A', big))\n    # 참이면 1000원을 빼요.\n    if big:\n        fee = fee - 1000\n    # 결정 B: 회원인가요? 참이면 반값이에요.\n    seen.add(('B', member))\n    if member:\n        fee = fee // 2\n    return fee\n\n\n# 테스트 입력이에요. 첫 묶음은 앞 문제에서 문장 커버리지 100%를 만든 입력이에요.\ntests = [(40000, True), (10000, False)]\nfor total, member in tests:\n    print('배송비:', ship(total, member))\n# 결정 2개의 참·거짓, 모두 4가지 중 몇 가지가 나왔는지 봐요.\n# 정렬하면 결정마다 False가 True보다 앞에 와요.\nprint('나온 결과:', sorted(seen))\nprint('결정 커버리지:', len(seen), '/ 4')\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "배송비: 1000\n배송비: 3000\n나온 결과: [('A', False), ('A', True), ('B', False), ('B', True)]\n결정 커버리지: 4 / 4"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "tests = [(40000, True), (10000, False)]로 바꿔요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "# 결정마다 나온 결과(참·거짓)를 모아 둘 집합이에요.\nseen = set()\n# 요구는 앞 문제와 같아요.\nbase = 3000\nsale_from = 30000\n\n\n# 결정 결과를 먼저 변수에 담고, 기록한 다음 갈라져요.\ndef ship(total, member):\n    # 기본 배송비로 시작해요.\n    fee = base\n    # 결정 A: 총액이 기준 이상인가요? 비교한 결과 True나 False가 big에 담겨요.\n    big = total >= sale_from\n    # (결정 이름, 참·거짓) 짝을 기록해요.\n    seen.add(('A', big))\n    # 참이면 1000원을 빼요.\n    if big:\n        fee = fee - 1000\n    # 결정 B: 회원인가요? 참이면 반값이에요.\n    seen.add(('B', member))\n    if member:\n        fee = fee // 2\n    return fee\n\n\n# 테스트 입력이에요. 첫 묶음은 앞 문제에서 문장 커버리지 100%를 만든 입력이에요.\ntests = [(40000, True)]\nfor total, member in tests:\n    print('배송비:', ship(total, member))\n# 결정 2개의 참·거짓, 모두 4가지 중 몇 가지가 나왔는지 봐요.\n# 정렬하면 결정마다 False가 True보다 앞에 와요.\nprint('나온 결과:', sorted(seen))\nprint('결정 커버리지:', len(seen), '/ 4')\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. ), ('B', True)] / 결정 커버리지: 2 / 4"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 총액만 낮추거나 회원만 바꾸면 결과 하나가 여전히 빠져요."
+        },
+        {
+          "action": "patch_code",
+          "before": "tests = [(40000, True)]",
+          "after": "tests = [(40000, True), (10000, False)]",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. ), ('B', True)] / 결정 커버리지: 4 / 4"
+        },
+        {
+          "action": "submit"
+        }
+      ],
+      "checker": "import ast\nimport builtins\nimport contextlib\nimport io\nimport math\nimport os\nfrom pathlib import Path\nimport shutil\nimport sys\nimport tempfile\nimport traceback\nimport warnings\n\nos.environ['MPLBACKEND'] = 'Agg'\n# Grading output is for the verdict only; font and library warnings would bury the reason.\nwarnings.filterwarnings('ignore')\nbuiltins.display = lambda *args, **kwargs: None\nreference = \"# 결정마다 나온 결과(참·거짓)를 모아 둘 집합이에요.\\nseen = set()\\n# 요구는 앞 문제와 같아요.\\nbase = 3000\\nsale_from = 30000\\n\\n\\n# 결정 결과를 먼저 변수에 담고, 기록한 다음 갈라져요.\\ndef ship(total, member):\\n    # 기본 배송비로 시작해요.\\n    fee = base\\n    # 결정 A: 총액이 기준 이상인가요? 비교한 결과 True나 False가 big에 담겨요.\\n    big = total >= sale_from\\n    # (결정 이름, 참·거짓) 짝을 기록해요.\\n    seen.add(('A', big))\\n    # 참이면 1000원을 빼요.\\n    if big:\\n        fee = fee - 1000\\n    # 결정 B: 회원인가요? 참이면 반값이에요.\\n    seen.add(('B', member))\\n    if member:\\n        fee = fee // 2\\n    return fee\\n\\n\\n# 테스트 입력이에요. 첫 묶음은 앞 문제에서 문장 커버리지 100%를 만든 입력이에요.\\ntests = [(40000, True), (10000, False)]\\nfor total, member in tests:\\n    print('배송비:', ship(total, member))\\n# 결정 2개의 참·거짓, 모두 4가지 중 몇 가지가 나왔는지 봐요.\\n# 정렬하면 결정마다 False가 True보다 앞에 와요.\\nprint('나온 결과:', sorted(seen))\\nprint('결정 커버리지:', len(seen), '/ 4')\\n\"\ncases = [{}, {'base': 4000}, {'base': 2000, 'sale_from': 35000}]\nnames = []\nbase_files = {}\nsource = open(sys.argv[1], encoding='utf8').read()\n\n\nclass Inputs(ast.NodeTransformer):\n    # Replace only the first prepared assignment to each changed name.\n    def __init__(self, values):\n        self.values = values\n        self.seen = set()\n\n    def visit_Assign(self, node):\n        if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):\n            name = node.targets[0].id\n            if name in self.values and name not in self.seen:\n                self.seen.add(name)\n                node.value = ast.parse(repr(self.values[name]), mode='eval').body\n        return node\n\n\ndef execute(text, values):\n    tree = ast.fix_missing_locations(Inputs(values).visit(ast.parse(text)))\n    scope = {'__name__': '__main__'}\n    output = io.StringIO()\n    with contextlib.redirect_stdout(output):\n        exec(compile(tree, 'main.py', 'exec'), scope)\n    plt = sys.modules.get('matplotlib.pyplot')\n    if plt is not None:\n        plt.close('all')\n    return output.getvalue().rstrip('\\n'), scope\n\n\ndef same(actual, expected):\n    pd = sys.modules.get('pandas')\n    if pd is not None and isinstance(expected, (pd.DataFrame, pd.Series, pd.Index)):\n        if type(actual) is not type(expected):\n            return False\n        try:\n            if isinstance(expected, pd.DataFrame):\n                pd.testing.assert_frame_equal(actual, expected)\n            elif isinstance(expected, pd.Series):\n                pd.testing.assert_series_equal(actual, expected)\n            else:\n                pd.testing.assert_index_equal(actual, expected)\n            return True\n        except AssertionError:\n            return False\n    np = sys.modules.get('numpy')\n    if np is not None and isinstance(expected, np.ndarray):\n        # Model and scaler outputs: same shape, and values equal up to float rounding.\n        if not isinstance(actual, np.ndarray) or actual.shape != expected.shape:\n            return False\n        if expected.dtype.kind in 'fc':\n            return bool(np.allclose(actual, expected, rtol=1e-7, atol=1e-9, equal_nan=True))\n        return bool(np.array_equal(actual, expected))\n    if isinstance(expected, float) and isinstance(actual, (int, float)):\n        return math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-12)\n    try:\n        return bool(actual == expected)\n    except Exception:\n        return False\n\n\ndef fail(message):\n    # The learner reads only this message, never the checker's own traceback.\n    print(message, file=sys.stderr)\n    sys.exit(1)\n\n\ndef snapshot(inputs):\n    # Files the run created or changed, such as a saved result CSV.\n    produced = {}\n    for path in Path('.').rglob('*'):\n        if path.is_file() and inputs.get(path.as_posix()) != path.read_bytes():\n            produced[path.as_posix()] = path.read_bytes()\n    return produced\n\n\ndef run_in_fresh_folder(files, text, values):\n    # Each run gets its own copy of the data, so files one run writes never help another.\n    home = os.getcwd()\n    folder = tempfile.mkdtemp(dir=home)\n    try:\n        os.chdir(folder)\n        inputs = {}\n        for path, content in files.items():\n            target = Path(path)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_text(content, encoding='utf8')\n            inputs[target.as_posix()] = target.read_bytes()\n        output, scope = execute(text, values)\n        return output, scope, snapshot(inputs)\n    finally:\n        os.chdir(home)\n        shutil.rmtree(folder, ignore_errors=True)\n\n\ndef describe(case):\n    parts = [name + ' = ' + repr(value) for name, value in case.items() if name != 'files']\n    parts += [path + ' 내용' for path in case.get('files', {})]\n    return ', '.join(parts)\n\n\nMESSAGES = {'__figures__': '그래프의 종류·축 이름·값이 기준 그래프와 달라요. 바뀐 자료로도 같은 그래프를 그리세요.'}\nfor index, case in enumerate(cases):\n    values = {k: v for k, v in case.items() if k != 'files'}\n    files = {**base_files, **case.get('files', {})}\n    expected, wanted, made = run_in_fresh_folder(files, reference, values)\n    changed = '준비 값을 ' + describe(case) + '(으)로 바꾸면 '\n    try:\n        actual, scope, produced = run_in_fresh_folder(files, source, values)\n    except SystemExit:\n        fail('코드가 exit로 중간에 끝났어요. 끝까지 실행되게 하세요.')\n    except BaseException as error:\n        reason = ''.join(traceback.format_exception_only(type(error), error)).strip()\n        fail(('코드를 실행하면' if index == 0 else changed.rstrip()) + ' 오류가 나요.\\n' + reason)\n    if index == 0:\n        problem = '실행 결과가 기대와 달라요.'\n    else:\n        problem = changed + '결과가 달라요.\\n값이나 자료가 바뀌어도 맞는 방법인지 확인하세요.'\n    if actual != expected:\n        fail(problem + '\\n기대 출력:\\n' + expected[-600:] + '\\n실제 출력:\\n' + actual[-600:])\n    for name in names:\n        if name not in scope:\n            fail(name + '에 결과를 담아 주세요.')\n        if not same(scope[name], wanted[name]):\n            fail(problem + '\\n' + MESSAGES.get(name, name + '의 값이 기대와 달라요.'))\n    for path in sorted(made):\n        if path not in produced:\n            fail(problem + '\\n' + path + ' 파일을 저장하지 않았어요.')\n        if produced[path] != made[path]:\n            fail(problem + '\\n저장한 ' + path + ' 파일의 내용이 기대와 달라요.')\nprint('준비 값과 자료를 바꿔도 같은 원리로 계산했어요.')\n"
+    },
+    {
+      "id": "technique-names",
+      "title": "기법 이름을 보기에서 골라요",
+      "goal": "시험에서는 기법 이름을 적어요. 앞에서 해 본 실험을 이름과 짝지어 보세요.\n조건 커버리지(condition coverage)는 결정 속 조건을 하나씩 봐요. 결정 커버리지는 결정 전체의 참·거짓만 보고요.\n`a > 0 and b > 0`은 결정 하나에 조건이 둘이에요. 두 조건이 각각 참·거짓을 가져야 해요.\n\n보기에서 골라 ? 자리에 적으세요. 번호는 그대로 두세요.\n\n| 칸 | 설명 |\n|---|---|\n| ① | 같은 결과가 나올 입력끼리 묶고, 묶음마다 대표값을 골라요 |\n| ② | 경계값과 그 바로 앞뒤 값을 골라요 |\n| ③ | 결정 속 조건 하나하나가 참·거짓을 한 번씩 갖게 해요 |\n| ④ | ①·②처럼 코드 안을 보지 않고 요구만 보고 고르는 테스트예요 |\n\n| 보기 |\n|---|\n| 동등 분할 · 경계값 분석 · 문장 커버리지 · 결정 커버리지 |\n| 조건 커버리지 · 블랙박스 테스트 · 화이트박스 테스트 |\n",
+      "language": "answer",
+      "entry_file": "answer.txt",
+      "starter_code": "① ?\n② ?\n③ ?\n④ ?\n",
+      "solution": "① 동등 분할\n② 경계값 분석\n③ 조건 커버리지\n④ 블랙박스 테스트\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "동등분할\n경계값분석\n조건커버리지\n블랙박스테스트"
+        },
+        {
+          "input": "1",
+          "expected": "동등분할"
+        },
+        {
+          "input": "1",
+          "expected": "동등분할테스트"
+        },
+        {
+          "input": "1",
+          "expected": "동등분할(equivalence partitioning)"
+        },
+        {
+          "input": "1",
+          "expected": "동등분할(equivalencepartitioning)"
+        },
+        {
+          "input": "1",
+          "expected": "동등분할 (equivalence partitioning)"
+        },
+        {
+          "input": "2",
+          "expected": "경계값분석"
+        },
+        {
+          "input": "2",
+          "expected": "경계값분석테스트"
+        },
+        {
+          "input": "2",
+          "expected": "경계값분석(boundary value analysis)"
+        },
+        {
+          "input": "2",
+          "expected": "경계값분석(boundaryvalueanalysis)"
+        },
+        {
+          "input": "2",
+          "expected": "경계값분석 (boundary value analysis)"
+        },
+        {
+          "input": "3",
+          "expected": "조건커버리지"
+        },
+        {
+          "input": "3",
+          "expected": "조건커버리지(condition coverage)"
+        },
+        {
+          "input": "3",
+          "expected": "조건커버리지(conditioncoverage)"
+        },
+        {
+          "input": "3",
+          "expected": "조건커버리지 (condition coverage)"
+        },
+        {
+          "input": "4",
+          "expected": "블랙박스테스트"
+        },
+        {
+          "input": "4",
+          "expected": "블랙박스"
+        },
+        {
+          "input": "4",
+          "expected": "블랙박스테스트(black box test)"
+        },
+        {
+          "input": "4",
+          "expected": "블랙박스테스트(blackboxtest)"
+        },
+        {
+          "input": "4",
+          "expected": "블랙박스테스트 (black box test)"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "③은 결정 전체가 아니라 그 속 조건 하나하나를 봐요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "① ?\n② ?\n③ ?\n④ ?\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. ? / ? / ? / ?"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 결정 커버리지와 조건 커버리지를 바꿔 적기 쉬워요."
+        },
+        {
+          "action": "patch_code",
+          "before": "① ?\n② ?\n③ ?\n④ ?",
+          "after": "① 동등 분할\n② 경계값 분석\n③ 조건 커버리지\n④ 블랙박스 테스트",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 동등분할 / 경계값분석 / 조건커버리지 / 블랙박스테스트"
+        },
+        {
+          "action": "submit"
+        }
+      ]
+    },
+    {
+      "id": "stub-integration",
+      "title": "아직 없는 모듈은 스텁으로 대신해요",
+      "goal": "통합 테스트(integration test)는 모듈을 합쳐서 확인해요. 서로 값을 잘 주고받는지 봐요. 부르는 쪽이 위 모듈, 불려 가는 쪽이 아래 모듈이에요. 파일 속 순서와는 상관없어요.\n하향식 통합은 위 모듈부터 합쳐요. 아직 없는 아래 모듈은 스텁(stub)으로 대신해요. 스텁은 정해 둔 답만 주는 가짜예요.\n상향식 통합은 아래 모듈부터 합쳐요. 그때 위에서 불러 주는 임시 프로그램이 드라이버(driver)예요.\n\n준비 코드를 실행해 오류 첫 줄 끝의 한국어 메시지를 읽어 보세요. Order가 부르는 아래 모듈 Pay가 아직 미완성이에요.\nOrder에 Pay 대신 PayStub을 끼우세요. `new Pay()`를 `new PayStub()`으로 바꾸면 돼요.\nPayStub은 Pay를 물려받아 approve를 다시 만든 자식이에요. 그래서 Pay 자리에 들어가요.\n다시 실행해 Order가 넘긴 금액을 스텁이 받았는지 보세요.",
+      "language": "java",
+      "entry_file": "Main.java",
+      "starter_code": "// 아래 모듈(불려 가는 쪽): 카드 결제를 맡아요. 아직 다 만들지 않았어요.\nclass Pay {\n    // 결제를 승인하면 true를 돌려줄 메서드예요.\n    boolean approve(int amount) {\n        // 아직 만들지 않아서 부르면 오류를 내고 멈춰요.\n        throw new IllegalStateException(\"결제 모듈은 아직 만드는 중이에요\");\n    }\n}\n\n// 스텁: 아래 모듈 대신 정해 둔 답만 돌려주는 가짜예요.\nclass PayStub extends Pay {\n    // 부모 메서드를 다시 만들어요(오버라이딩).\n    boolean approve(int amount) {\n        // 위 모듈이 넘긴 값을 보여 줘요. 주고받는 값을 눈으로 확인하려고요.\n        System.out.println(\"스텁이 받은 금액: \" + amount);\n        // 50000원 이하만 승인한다고 정해 둔 답이에요.\n        return amount <= 50000;\n    }\n}\n\n// 위 모듈(부르는 쪽): 이번에 테스트할 주문 모듈이에요. Pay를 불러 써요.\nclass Order {\n    // 주문이 쓸 결제 모듈이에요.\n    Pay pay;\n\n    // 만들 때 받은 결제 모듈을 필드에 담아요.\n    Order(Pay pay) {\n        this.pay = pay;\n    }\n\n    // 주문 금액을 받아 결과 글자를 돌려줘요.\n    String place(int total) {\n        // 0원 이하는 결제 전에 거절해요.\n        if (total <= 0) {\n            return \"주문 거절\";\n        }\n        // 결제 모듈에 승인을 물어요.\n        if (pay.approve(total)) {\n            return \"주문 완료\";\n        }\n        return \"결제 실패\";\n    }\n}\n\nclass Main {\n    public static void main(String[] args) {\n        // 테스트할 주문 금액이에요.\n        int total = 30000;\n        // 주문 모듈에 결제 모듈을 끼워요.\n        Order order = new Order(new Pay());\n        // 위 모듈을 불러 결과를 확인해요.\n        System.out.println(total + \"원: \" + order.place(total));\n    }\n}\n",
+      "solution": "// 아래 모듈(불려 가는 쪽): 카드 결제를 맡아요. 아직 다 만들지 않았어요.\nclass Pay {\n    // 결제를 승인하면 true를 돌려줄 메서드예요.\n    boolean approve(int amount) {\n        // 아직 만들지 않아서 부르면 오류를 내고 멈춰요.\n        throw new IllegalStateException(\"결제 모듈은 아직 만드는 중이에요\");\n    }\n}\n\n// 스텁: 아래 모듈 대신 정해 둔 답만 돌려주는 가짜예요.\nclass PayStub extends Pay {\n    // 부모 메서드를 다시 만들어요(오버라이딩).\n    boolean approve(int amount) {\n        // 위 모듈이 넘긴 값을 보여 줘요. 주고받는 값을 눈으로 확인하려고요.\n        System.out.println(\"스텁이 받은 금액: \" + amount);\n        // 50000원 이하만 승인한다고 정해 둔 답이에요.\n        return amount <= 50000;\n    }\n}\n\n// 위 모듈(부르는 쪽): 이번에 테스트할 주문 모듈이에요. Pay를 불러 써요.\nclass Order {\n    // 주문이 쓸 결제 모듈이에요.\n    Pay pay;\n\n    // 만들 때 받은 결제 모듈을 필드에 담아요.\n    Order(Pay pay) {\n        this.pay = pay;\n    }\n\n    // 주문 금액을 받아 결과 글자를 돌려줘요.\n    String place(int total) {\n        // 0원 이하는 결제 전에 거절해요.\n        if (total <= 0) {\n            return \"주문 거절\";\n        }\n        // 결제 모듈에 승인을 물어요.\n        if (pay.approve(total)) {\n            return \"주문 완료\";\n        }\n        return \"결제 실패\";\n    }\n}\n\nclass Main {\n    public static void main(String[] args) {\n        // 테스트할 주문 금액이에요.\n        int total = 30000;\n        // 주문 모듈에 결제 모듈을 끼워요.\n        Order order = new Order(new PayStub());\n        // 위 모듈을 불러 결과를 확인해요.\n        System.out.println(total + \"원: \" + order.place(total));\n    }\n}\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "스텁이 받은 금액: 30000\n30000원: 주문 완료"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "Order order = new Order(new PayStub());로 바꿔요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "// 아래 모듈(불려 가는 쪽): 카드 결제를 맡아요. 아직 다 만들지 않았어요.\nclass Pay {\n    // 결제를 승인하면 true를 돌려줄 메서드예요.\n    boolean approve(int amount) {\n        // 아직 만들지 않아서 부르면 오류를 내고 멈춰요.\n        throw new IllegalStateException(\"결제 모듈은 아직 만드는 중이에요\");\n    }\n}\n\n// 스텁: 아래 모듈 대신 정해 둔 답만 돌려주는 가짜예요.\nclass PayStub extends Pay {\n    // 부모 메서드를 다시 만들어요(오버라이딩).\n    boolean approve(int amount) {\n        // 위 모듈이 넘긴 값을 보여 줘요. 주고받는 값을 눈으로 확인하려고요.\n        System.out.println(\"스텁이 받은 금액: \" + amount);\n        // 50000원 이하만 승인한다고 정해 둔 답이에요.\n        return amount <= 50000;\n    }\n}\n\n// 위 모듈(부르는 쪽): 이번에 테스트할 주문 모듈이에요. Pay를 불러 써요.\nclass Order {\n    // 주문이 쓸 결제 모듈이에요.\n    Pay pay;\n\n    // 만들 때 받은 결제 모듈을 필드에 담아요.\n    Order(Pay pay) {\n        this.pay = pay;\n    }\n\n    // 주문 금액을 받아 결과 글자를 돌려줘요.\n    String place(int total) {\n        // 0원 이하는 결제 전에 거절해요.\n        if (total <= 0) {\n            return \"주문 거절\";\n        }\n        // 결제 모듈에 승인을 물어요.\n        if (pay.approve(total)) {\n            return \"주문 완료\";\n        }\n        return \"결제 실패\";\n    }\n}\n\nclass Main {\n    public static void main(String[] args) {\n        // 테스트할 주문 금액이에요.\n        int total = 30000;\n        // 주문 모듈에 결제 모듈을 끼워요.\n        Order order = new Order(new Pay());\n        // 위 모듈을 불러 결과를 확인해요.\n        System.out.println(total + \"원: \" + order.place(total));\n    }\n}\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": true
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "지금 코드는 검사를 통과하지 못해요."
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 진짜 Pay를 고쳐 오류를 없애면 없는 기능을 지어내는 거예요."
+        },
+        {
+          "action": "patch_code",
+          "before": "new Order(new Pay())",
+          "after": "new Order(new PayStub())",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 스텁이 받은 금액: 30000 / 30000원: 주문 완료"
+        },
+        {
+          "action": "submit"
+        }
+      ],
+      "checker": "import com.sun.source.tree.VariableTree;\nimport com.sun.source.util.JavacTask;\nimport com.sun.source.util.TreeScanner;\nimport com.sun.source.util.Trees;\nimport java.io.ByteArrayOutputStream;\nimport java.nio.charset.StandardCharsets;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.ArrayList;\nimport java.util.Base64;\nimport java.util.Comparator;\nimport java.util.LinkedHashMap;\nimport java.util.List;\nimport java.util.Map;\nimport java.util.concurrent.TimeUnit;\n\nclass QuestContract {\n    // The prepared values' output, then each scenario: output, then name/value pairs. Base64 keeps any text intact.\n    static final String BASE = \"7Iqk7YWB7J20IOuwm+ydgCDquIjslaE6IDMwMDAwCjMwMDAw7JuQOiDso7zrrLgg7JmE66OM\";\n    static final String[] SCENARIOS = {\"7Iqk7YWB7J20IOuwm+ydgCDquIjslaE6IDcwMDAwCjcwMDAw7JuQOiDqsrDsoJwg7Iuk7YyoAHRvdGFsADcwMDAw\", \"MOybkDog7KO866y4IOqxsOygiAB0b3RhbAAw\"};\n\n    // A learner sees only this message, never a stack trace.\n    static void fail(String message) {\n        System.err.println(message);\n        System.exit(1);\n    }\n\n    static String describe(Map<String, String> values) {\n        List<String> parts = new ArrayList<>();\n        values.forEach((name, value) -> parts.add(name + \" = \" + value));\n        return String.join(\", \", parts);\n    }\n\n    public static void main(String[] args) throws Exception {\n        String source = Files.readString(Path.of(\"Main.java\"));\n        List<Map<String, String>> scenarios = new ArrayList<>();\n        List<String> expected = new ArrayList<>();\n        List<String> programs = new ArrayList<>();\n        programs.add(source);\n        for (String encoded : SCENARIOS) {\n            String[] parts = new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8).split(\"\\u0000\", -1);\n            Map<String, String> values = new LinkedHashMap<>();\n            for (int i = 1; i + 1 < parts.length; i += 2) values.put(parts[i], parts[i + 1]);\n            scenarios.add(values);\n            expected.add(parts[0]);\n            programs.add(mutate(values));\n        }\n        // Run the learner's program and every changed copy at once; report in order.\n        List<java.util.concurrent.Future<String[]>> runs = new ArrayList<>();\n        var pool = java.util.concurrent.Executors.newFixedThreadPool(programs.size());\n        for (String program : programs) runs.add(pool.submit(() -> run(program)));\n        pool.shutdown();\n        String base = new String(Base64.getDecoder().decode(BASE), StandardCharsets.UTF_8);\n        String[] own = runs.get(0).get();\n        if (own[1] != null) fail(\"코드를 실행하면 오류가 나요. 코드 실행으로 오류 줄을 먼저 확인하세요.\\n\" + own[1]);\n        if (!own[0].equals(base)) fail(\"실행 결과가 기대와 달라요.\\n기대 출력:\\n\" + tail(base) + \"\\n실제 출력:\\n\" + tail(own[0]));\n        for (int i = 0; i < scenarios.size(); i++) {\n            String[] result = runs.get(i + 1).get();\n            String changed = \"준비 값을 \" + describe(scenarios.get(i)) + \"(으)로 바꾸면 \";\n            if (result[1] != null) fail(changed + \"오류가 나요.\\n\" + result[1]);\n            if (!result[0].equals(expected.get(i))) {\n                fail(changed + \"결과가 달라요.\\n값이 바뀌어도 맞는 식인지 확인하세요.\\n기대 출력:\\n\" + tail(expected.get(i))\n                    + \"\\n실제 출력:\\n\" + tail(result[0]));\n            }\n        }\n        System.out.print(programs.get(programs.size() - 1));\n    }\n\n    static String tail(String text) {\n        return text.length() > 600 ? text.substring(text.length() - 600) : text;\n    }\n\n    // Replace the first initializer of each prepared name, found by the compiler's own parser.\n    static String mutate(Map<String, String> values) throws Exception {\n        String source = Files.readString(Path.of(\"Main.java\"));\n        var compiler = javax.tools.ToolProvider.getSystemJavaCompiler();\n        try (var files = compiler.getStandardFileManager(null, null, StandardCharsets.UTF_8)) {\n            var task = (JavacTask) compiler.getTask(null, files, diagnostic -> {}, List.of(\"-proc:none\"), null,\n                files.getJavaFileObjects(\"Main.java\"));\n            var tree = task.parse().iterator().next();\n            var positions = Trees.instance(task).getSourcePositions();\n            Map<String, long[]> found = new LinkedHashMap<>();\n            new TreeScanner<Void, Void>() {\n                public Void visitVariable(VariableTree node, Void unused) {\n                    String name = node.getName().toString();\n                    if (values.containsKey(name) && !found.containsKey(name) && node.getInitializer() != null) {\n                        found.put(name, new long[] {positions.getStartPosition(tree, node.getInitializer()),\n                            positions.getEndPosition(tree, node.getInitializer())});\n                    }\n                    return super.visitVariable(node, unused);\n                }\n            }.scan(tree, null);\n            for (String name : values.keySet()) {\n                long[] bounds = found.get(name);\n                if (bounds == null || bounds[0] < 0 || bounds[1] < bounds[0]) {\n                    fail(\"준비 코드의 \" + name + \" 선언과 처음 값은 그대로 두세요.\");\n                }\n            }\n            List<Map.Entry<String, long[]>> edits = new ArrayList<>(found.entrySet());\n            edits.sort(Comparator.comparingLong((Map.Entry<String, long[]> e) -> e.getValue()[0]).reversed());\n            StringBuilder changed = new StringBuilder(source);\n            for (var edit : edits) changed.replace((int) edit.getValue()[0], (int) edit.getValue()[1], values.get(edit.getKey()));\n            return changed.toString();\n        }\n    }\n\n    // Returns {output, null} or {null, problem}; problems are worded for the learner.\n    static String[] run(String program) throws Exception {\n        Path folder = Files.createTempDirectory(\"quest-contract\");\n        try {\n            Files.writeString(folder.resolve(\"Main.java\"), program);\n            String java = Path.of(System.getProperty(\"java.home\"), \"bin\", \"java\").toString();\n            Process process = new ProcessBuilder(java, \"-Xmx128m\", \"-Dfile.encoding=UTF-8\", \"-Dstdout.encoding=UTF-8\",\n                \"-Dstderr.encoding=UTF-8\", \"--source\", \"25\", \"Main.java\").directory(folder.toFile()).start();\n            process.getOutputStream().close();\n            ByteArrayOutputStream out = new ByteArrayOutputStream();\n            ByteArrayOutputStream err = new ByteArrayOutputStream();\n            Thread readOut = new Thread(() -> { try { process.getInputStream().transferTo(out); } catch (Exception ignored) {} });\n            Thread readErr = new Thread(() -> { try { process.getErrorStream().transferTo(err); } catch (Exception ignored) {} });\n            readOut.start();\n            readErr.start();\n            if (!process.waitFor(8, TimeUnit.SECONDS)) {\n                process.destroyForcibly();\n                return new String[] {null, \"실행이 8초 안에 끝나지 않아요. 반복 조건을 확인하세요.\"};\n            }\n            readOut.join();\n            readErr.join();\n            if (process.exitValue() != 0) return new String[] {null, tail(err.toString(StandardCharsets.UTF_8))};\n            String text = out.toString(StandardCharsets.UTF_8).replace(\"\\r\\n\", \"\\n\");\n            while (text.endsWith(\"\\n\")) text = text.substring(0, text.length() - 1);\n            return new String[] {text, null};\n        } finally {\n            try (var paths = Files.walk(folder)) {\n                paths.sorted(Comparator.reverseOrder()).forEach(path -> path.toFile().delete());\n            }\n        }\n    }\n}\n"
+    },
+    {
+      "id": "levels-integration",
+      "title": "테스트 수준과 통합 도구를 적어요",
+      "goal": "테스트 수준은 단위 → 통합 → 시스템 → 인수 순서로 넓어져요.\n단위는 모듈 하나, 시스템은 완성된 전체를 봐요. 인수(acceptance)는 사용자가 받아들일지 확인해요. 함수에 넘기는 인수와는 다른 말이에요.\nV 모델은 V자 왼쪽에 개발, 오른쪽에 테스트를 놓고 같은 높이끼리 짝지어요. 맨 위 요구사항 분석은 인수 테스트와 짝이에요. 맨 아래 코딩은 단위 테스트와 짝이고요.\n\n보기에서 골라 ? 자리에 적으세요. 번호는 그대로 두세요.\n\n| 칸 | 설명 |\n|---|---|\n| ① | V 모델에서 요구사항 분석과 짝을 이루는 테스트예요 |\n| ② | 모듈을 합치며 주고받는 부분을 확인하는 테스트예요 |\n| ③ | 하향식 통합에서 아직 없는 아래 모듈 대신 쓰는 가짜예요 |\n| ④ | 상향식 통합에서 아래 모듈을 불러 주는 임시 프로그램이에요 |\n\n| 보기 |\n|---|\n| 단위 테스트 · 통합 테스트 · 시스템 테스트 |\n| 인수 테스트 · 스텁 · 드라이버 |\n",
+      "language": "answer",
+      "entry_file": "answer.txt",
+      "starter_code": "① ?\n② ?\n③ ?\n④ ?\n",
+      "solution": "① 인수 테스트\n② 통합 테스트\n③ 스텁\n④ 드라이버\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "인수테스트\n통합테스트\n스텁\n드라이버"
+        },
+        {
+          "input": "1",
+          "expected": "인수테스트"
+        },
+        {
+          "input": "1",
+          "expected": "인수"
+        },
+        {
+          "input": "1",
+          "expected": "acceptance test"
+        },
+        {
+          "input": "1",
+          "expected": "acceptancetest"
+        },
+        {
+          "input": "1",
+          "expected": "인수테스트(acceptance test)"
+        },
+        {
+          "input": "1",
+          "expected": "인수테스트(acceptancetest)"
+        },
+        {
+          "input": "1",
+          "expected": "인수테스트 (acceptance test)"
+        },
+        {
+          "input": "2",
+          "expected": "통합테스트"
+        },
+        {
+          "input": "2",
+          "expected": "통합"
+        },
+        {
+          "input": "2",
+          "expected": "integration test"
+        },
+        {
+          "input": "2",
+          "expected": "integrationtest"
+        },
+        {
+          "input": "2",
+          "expected": "통합테스트(integration test)"
+        },
+        {
+          "input": "2",
+          "expected": "통합테스트(integrationtest)"
+        },
+        {
+          "input": "2",
+          "expected": "통합테스트 (integration test)"
+        },
+        {
+          "input": "3",
+          "expected": "스텁"
+        },
+        {
+          "input": "3",
+          "expected": "테스트스텁"
+        },
+        {
+          "input": "3",
+          "expected": "stub"
+        },
+        {
+          "input": "3",
+          "expected": "test stub"
+        },
+        {
+          "input": "3",
+          "expected": "teststub"
+        },
+        {
+          "input": "3",
+          "expected": "스텁(stub)"
+        },
+        {
+          "input": "3",
+          "expected": "스텁 (stub)"
+        },
+        {
+          "input": "3",
+          "expected": "스텁(test stub)"
+        },
+        {
+          "input": "3",
+          "expected": "스텁(teststub)"
+        },
+        {
+          "input": "3",
+          "expected": "스텁 (test stub)"
+        },
+        {
+          "input": "3",
+          "expected": "테스트스텁(stub)"
+        },
+        {
+          "input": "3",
+          "expected": "테스트스텁 (stub)"
+        },
+        {
+          "input": "3",
+          "expected": "테스트스텁(test stub)"
+        },
+        {
+          "input": "3",
+          "expected": "테스트스텁(teststub)"
+        },
+        {
+          "input": "3",
+          "expected": "테스트스텁 (test stub)"
+        },
+        {
+          "input": "4",
+          "expected": "드라이버"
+        },
+        {
+          "input": "4",
+          "expected": "테스트드라이버"
+        },
+        {
+          "input": "4",
+          "expected": "driver"
+        },
+        {
+          "input": "4",
+          "expected": "test driver"
+        },
+        {
+          "input": "4",
+          "expected": "testdriver"
+        },
+        {
+          "input": "4",
+          "expected": "드라이버(driver)"
+        },
+        {
+          "input": "4",
+          "expected": "드라이버 (driver)"
+        },
+        {
+          "input": "4",
+          "expected": "드라이버(test driver)"
+        },
+        {
+          "input": "4",
+          "expected": "드라이버(testdriver)"
+        },
+        {
+          "input": "4",
+          "expected": "드라이버 (test driver)"
+        },
+        {
+          "input": "4",
+          "expected": "테스트드라이버(driver)"
+        },
+        {
+          "input": "4",
+          "expected": "테스트드라이버 (driver)"
+        },
+        {
+          "input": "4",
+          "expected": "테스트드라이버(test driver)"
+        },
+        {
+          "input": "4",
+          "expected": "테스트드라이버(testdriver)"
+        },
+        {
+          "input": "4",
+          "expected": "테스트드라이버 (test driver)"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "스텁은 불려 가는 쪽, 드라이버는 부르는 쪽을 대신해요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "① ?\n② ?\n③ ?\n④ ?\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. ? / ? / ? / ?"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 스텁과 드라이버를 바꿔 적는 실수가 가장 흔해요."
+        },
+        {
+          "action": "patch_code",
+          "before": "① ?\n② ?\n③ ?\n④ ?",
+          "after": "① 인수 테스트\n② 통합 테스트\n③ 스텁\n④ 드라이버",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 인수테스트 / 통합테스트 / 스텁 / 드라이버"
+        },
+        {
+          "action": "submit"
+        }
+      ]
+    },
+    {
+      "id": "quality-characteristics",
+      "title": "품질 특성 이름을 적어요",
+      "goal": "ISO/IEC 25010은 소프트웨어 제품 품질을 특성으로 나눈 국제 표준이에요.\n2011판과 2023판에서 이름이 같은 특성만 물어요.\n특성마다 따지는 세부 항목이 있는데, 이걸 부특성이라고 해요. 부특성을 보고 특성을 맞혀 보세요.\n\n보기 표에서 특성마다 무엇을 보는지 먼저 읽으세요.\n그다음 설명의 부특성과 맞는 특성을 골라 ? 자리에 적으세요. 번호는 그대로 두세요.\n\n| 칸 | 설명 |\n|---|---|\n| ① | 응답 시간, 자원 사용량, 처리 용량을 따져요 |\n| ② | 가용성(필요할 때 쓸 수 있는지), 결함 허용성(결함이 있어도 돌아가는지), 회복성을 따져요 |\n| ③ | 모듈성, 재사용성, 분석성, 수정성, 시험성을 따져요 |\n\n| 보기 | 무엇을 보나 |\n|---|---|\n| 기능 적합성 | 요구한 기능을 맞게 해내는지 |\n| 성능 효율성 | 자원을 아끼며 빠르게 처리하는지 |\n| 호환성 | 다른 제품과 정보를 주고받으며 함께 쓰이는지 |\n| 신뢰성 | 정해진 조건에서 멈추지 않고 제 기능을 해내는지 |\n| 보안성 | 권한에 맞는 사람만 정보를 쓰게 하는지 |\n| 유지보수성 | 고치고 손보기 쉬운지 |\n",
+      "language": "answer",
+      "entry_file": "answer.txt",
+      "starter_code": "① ?\n② ?\n③ ?\n",
+      "solution": "① 성능 효율성\n② 신뢰성\n③ 유지보수성\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "성능효율성\n신뢰성\n유지보수성"
+        },
+        {
+          "input": "1",
+          "expected": "성능효율성"
+        },
+        {
+          "input": "1",
+          "expected": "performance efficiency"
+        },
+        {
+          "input": "1",
+          "expected": "performanceefficiency"
+        },
+        {
+          "input": "1",
+          "expected": "성능효율성(performance efficiency)"
+        },
+        {
+          "input": "1",
+          "expected": "성능효율성(performanceefficiency)"
+        },
+        {
+          "input": "1",
+          "expected": "성능효율성 (performance efficiency)"
+        },
+        {
+          "input": "2",
+          "expected": "신뢰성"
+        },
+        {
+          "input": "2",
+          "expected": "reliability"
+        },
+        {
+          "input": "2",
+          "expected": "신뢰성(reliability)"
+        },
+        {
+          "input": "2",
+          "expected": "신뢰성 (reliability)"
+        },
+        {
+          "input": "3",
+          "expected": "유지보수성"
+        },
+        {
+          "input": "3",
+          "expected": "maintainability"
+        },
+        {
+          "input": "3",
+          "expected": "유지보수성(maintainability)"
+        },
+        {
+          "input": "3",
+          "expected": "유지보수성 (maintainability)"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": true,
+      "hints": [
+        "②는 고장이 나도 버티고 다시 살아나는지 보는 특성이에요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "① ?\n② ?\n③ ?\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. ? / ? / ?"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 가용성을 보고 보안성을 고르기 쉬워요. 25010에선 신뢰성 안에 있어요."
+        },
+        {
+          "action": "patch_code",
+          "before": "① ?\n② ?\n③ ?",
+          "after": "① 성능 효율성\n② 신뢰성\n③ 유지보수성",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 성능효율성 / 신뢰성 / 유지보수성"
+        },
+        {
+          "action": "submit"
+        }
+      ]
+    },
+    {
+      "id": "fix-and-regress",
+      "title": "도전 · 고치고 다시 돌려 종료를 확인해요",
+      "goal": "결함을 고친 뒤엔 테스트 전체를 다시 돌려요. 고치다 새 결함이 생기지 않았는지 보는 거죠. 이걸 회귀 테스트(regression test)라고 해요.\n테스트를 언제 끝낼지 정한 기준이 종료 조건이에요. 여기선 실패 0개와 문장 커버리지 100%예요.\n어떤 입력으로도 실행 안 되는 문장이 있으면, 커버리지는 100%가 못 돼요.\n\n첫 문제의 요금 함수예요. 대표값, 두 경계값과 그 앞뒤 값을 채웠어요.\n준비 코드를 실행해 실패한 케이스와 실행 안 된 문장을 읽으세요.\n함수에서 한 곳만 고쳐 종료 조건을 채우세요. 고칠 곳은 직접 찾으세요.\n고치기 전과 뒤의 실패 수를 비교해 보세요. 이렇게 결함 수가 바뀌는 흐름을 결함 추이라고 해요.",
+      "language": "python",
+      "entry_file": "main.py",
+      "starter_code": "# 요구: child_to세 미만은 어린이, senior_from세 미만은 어른, 그 위는 경로예요.\nchild_to = 13\nsenior_from = 65\nkid = 5000\nadult = 10000\nsenior = 6000\n# 실행된 요금 문장의 이름을 모아요.\nran = set()\n\n\n# 테스트할 함수예요. 요금을 돌려주기 직전에 묶음 이름을 기록해요.\ndef fee(age):\n    # 어린이 묶음이에요.\n    if age < child_to:\n        ran.add('어린이')\n        return kid\n    # 어른 묶음이에요.\n    elif age >= child_to:\n        ran.add('어른')\n        return adult\n    # 경로 묶음이에요.\n    else:\n        ran.add('경로')\n        return senior\n\n\n# 묶음 대표값, 두 경계값과 그 앞뒤 값이에요. (나이, 기대 요금)으로 적었어요.\ncases = [(8, kid), (child_to - 1, kid), (child_to, adult), (child_to + 1, adult),\n         (40, adult), (senior_from - 1, adult), (senior_from, senior), (senior_from + 1, senior),\n         (80, senior)]\n# 실패한 케이스 수를 세어요.\nfails = 0\n# 케이스마다 실제 요금을 기대 요금과 비교해요.\nfor age, want in cases:\n    got = fee(age)\n    if got == want:\n        print(age, '통과')\n    else:\n        # 다르면 실패 수를 하나 늘리고 두 값을 보여 줘요.\n        fails = fails + 1\n        print(age, '실패: 기대', want, '실제', got)\n# 요금 문장 3개 중 실행된 묶음과 그 개수도 함께 봐요.\nprint('실행된 문장:', sorted(ran))\nprint('실패', fails, '· 문장 커버리지', len(ran), '/ 3')\n# 종료 조건: 실패 0개이고 문장 커버리지가 100%예요.\nif fails == 0 and len(ran) == 3:\n    print('종료 조건 충족')\nelse:\n    print('종료 조건 미충족')\n",
+      "solution": "# 요구: child_to세 미만은 어린이, senior_from세 미만은 어른, 그 위는 경로예요.\nchild_to = 13\nsenior_from = 65\nkid = 5000\nadult = 10000\nsenior = 6000\n# 실행된 요금 문장의 이름을 모아요.\nran = set()\n\n\n# 테스트할 함수예요. 요금을 돌려주기 직전에 묶음 이름을 기록해요.\ndef fee(age):\n    # 어린이 묶음이에요.\n    if age < child_to:\n        ran.add('어린이')\n        return kid\n    # 어른 묶음이에요.\n    elif age < senior_from:\n        ran.add('어른')\n        return adult\n    # 경로 묶음이에요.\n    else:\n        ran.add('경로')\n        return senior\n\n\n# 묶음 대표값, 두 경계값과 그 앞뒤 값이에요. (나이, 기대 요금)으로 적었어요.\ncases = [(8, kid), (child_to - 1, kid), (child_to, adult), (child_to + 1, adult),\n         (40, adult), (senior_from - 1, adult), (senior_from, senior), (senior_from + 1, senior),\n         (80, senior)]\n# 실패한 케이스 수를 세어요.\nfails = 0\n# 케이스마다 실제 요금을 기대 요금과 비교해요.\nfor age, want in cases:\n    got = fee(age)\n    if got == want:\n        print(age, '통과')\n    else:\n        # 다르면 실패 수를 하나 늘리고 두 값을 보여 줘요.\n        fails = fails + 1\n        print(age, '실패: 기대', want, '실제', got)\n# 요금 문장 3개 중 실행된 묶음과 그 개수도 함께 봐요.\nprint('실행된 문장:', sorted(ran))\nprint('실패', fails, '· 문장 커버리지', len(ran), '/ 3')\n# 종료 조건: 실패 0개이고 문장 커버리지가 100%예요.\nif fails == 0 and len(ran) == 3:\n    print('종료 조건 충족')\nelse:\n    print('종료 조건 미충족')\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "8 통과\n12 통과\n13 통과\n14 통과\n40 통과\n64 통과\n65 통과\n66 통과\n80 통과\n실행된 문장: ['경로', '어른', '어린이']\n실패 0 · 문장 커버리지 3 / 3\n종료 조건 충족"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": false,
+      "hints": [
+        "실행 안 된 문장은 어느 묶음인가요? 바로 앞 elif 조건을 보세요.",
+        "elif 조건이 13세 이상을 다 가져가요. 어른은 senior_from세 미만까지예요."
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "# 요구: child_to세 미만은 어린이, senior_from세 미만은 어른, 그 위는 경로예요.\nchild_to = 13\nsenior_from = 65\nkid = 5000\nadult = 10000\nsenior = 6000\n# 실행된 요금 문장의 이름을 모아요.\nran = set()\n\n\n# 테스트할 함수예요. 요금을 돌려주기 직전에 묶음 이름을 기록해요.\ndef fee(age):\n    # 어린이 묶음이에요.\n    if age < child_to:\n        ran.add('어린이')\n        return kid\n    # 어른 묶음이에요.\n    elif age >= child_to:\n        ran.add('어른')\n        return adult\n    # 경로 묶음이에요.\n    else:\n        ran.add('경로')\n        return senior\n\n\n# 묶음 대표값, 두 경계값과 그 앞뒤 값이에요. (나이, 기대 요금)으로 적었어요.\ncases = [(8, kid), (child_to - 1, kid), (child_to, adult), (child_to + 1, adult),\n         (40, adult), (senior_from - 1, adult), (senior_from, senior), (senior_from + 1, senior),\n         (80, senior)]\n# 실패한 케이스 수를 세어요.\nfails = 0\n# 케이스마다 실제 요금을 기대 요금과 비교해요.\nfor age, want in cases:\n    got = fee(age)\n    if got == want:\n        print(age, '통과')\n    else:\n        # 다르면 실패 수를 하나 늘리고 두 값을 보여 줘요.\n        fails = fails + 1\n        print(age, '실패: 기대', want, '실제', got)\n# 요금 문장 3개 중 실행된 묶음과 그 개수도 함께 봐요.\nprint('실행된 문장:', sorted(ran))\nprint('실패', fails, '· 문장 커버리지', len(ran), '/ 3')\n# 종료 조건: 실패 0개이고 문장 커버리지가 100%예요.\nif fails == 0 and len(ran) == 3:\n    print('종료 조건 충족')\nelse:\n    print('종료 조건 미충족')\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 실패 3 · 문장 커버리지 2 / 3 / 종료 조건 미충족"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 65를 숫자로 적거나 <=를 쓰면 경계 케이스가 실패해요."
+        },
+        {
+          "action": "patch_code",
+          "before": "elif age >= child_to:",
+          "after": "elif age < senior_from:",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요.  실패 0 · 문장 커버리지 3 / 3 / 종료 조건 충족"
+        },
+        {
+          "action": "submit"
+        }
+      ],
+      "checker": "import ast\nimport builtins\nimport contextlib\nimport io\nimport math\nimport os\nfrom pathlib import Path\nimport shutil\nimport sys\nimport tempfile\nimport traceback\nimport warnings\n\nos.environ['MPLBACKEND'] = 'Agg'\n# Grading output is for the verdict only; font and library warnings would bury the reason.\nwarnings.filterwarnings('ignore')\nbuiltins.display = lambda *args, **kwargs: None\nreference = \"# 요구: child_to세 미만은 어린이, senior_from세 미만은 어른, 그 위는 경로예요.\\nchild_to = 13\\nsenior_from = 65\\nkid = 5000\\nadult = 10000\\nsenior = 6000\\n# 실행된 요금 문장의 이름을 모아요.\\nran = set()\\n\\n\\n# 테스트할 함수예요. 요금을 돌려주기 직전에 묶음 이름을 기록해요.\\ndef fee(age):\\n    # 어린이 묶음이에요.\\n    if age < child_to:\\n        ran.add('어린이')\\n        return kid\\n    # 어른 묶음이에요.\\n    elif age < senior_from:\\n        ran.add('어른')\\n        return adult\\n    # 경로 묶음이에요.\\n    else:\\n        ran.add('경로')\\n        return senior\\n\\n\\n# 묶음 대표값, 두 경계값과 그 앞뒤 값이에요. (나이, 기대 요금)으로 적었어요.\\ncases = [(8, kid), (child_to - 1, kid), (child_to, adult), (child_to + 1, adult),\\n         (40, adult), (senior_from - 1, adult), (senior_from, senior), (senior_from + 1, senior),\\n         (80, senior)]\\n# 실패한 케이스 수를 세어요.\\nfails = 0\\n# 케이스마다 실제 요금을 기대 요금과 비교해요.\\nfor age, want in cases:\\n    got = fee(age)\\n    if got == want:\\n        print(age, '통과')\\n    else:\\n        # 다르면 실패 수를 하나 늘리고 두 값을 보여 줘요.\\n        fails = fails + 1\\n        print(age, '실패: 기대', want, '실제', got)\\n# 요금 문장 3개 중 실행된 묶음과 그 개수도 함께 봐요.\\nprint('실행된 문장:', sorted(ran))\\nprint('실패', fails, '· 문장 커버리지', len(ran), '/ 3')\\n# 종료 조건: 실패 0개이고 문장 커버리지가 100%예요.\\nif fails == 0 and len(ran) == 3:\\n    print('종료 조건 충족')\\nelse:\\n    print('종료 조건 미충족')\\n\"\ncases = [{}, {'child_to': 10, 'senior_from': 70}, {'senior_from': 60, 'senior': 3000}]\nnames = []\nbase_files = {}\nsource = open(sys.argv[1], encoding='utf8').read()\n\n\nclass Inputs(ast.NodeTransformer):\n    # Replace only the first prepared assignment to each changed name.\n    def __init__(self, values):\n        self.values = values\n        self.seen = set()\n\n    def visit_Assign(self, node):\n        if len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):\n            name = node.targets[0].id\n            if name in self.values and name not in self.seen:\n                self.seen.add(name)\n                node.value = ast.parse(repr(self.values[name]), mode='eval').body\n        return node\n\n\ndef execute(text, values):\n    tree = ast.fix_missing_locations(Inputs(values).visit(ast.parse(text)))\n    scope = {'__name__': '__main__'}\n    output = io.StringIO()\n    with contextlib.redirect_stdout(output):\n        exec(compile(tree, 'main.py', 'exec'), scope)\n    plt = sys.modules.get('matplotlib.pyplot')\n    if plt is not None:\n        plt.close('all')\n    return output.getvalue().rstrip('\\n'), scope\n\n\ndef same(actual, expected):\n    pd = sys.modules.get('pandas')\n    if pd is not None and isinstance(expected, (pd.DataFrame, pd.Series, pd.Index)):\n        if type(actual) is not type(expected):\n            return False\n        try:\n            if isinstance(expected, pd.DataFrame):\n                pd.testing.assert_frame_equal(actual, expected)\n            elif isinstance(expected, pd.Series):\n                pd.testing.assert_series_equal(actual, expected)\n            else:\n                pd.testing.assert_index_equal(actual, expected)\n            return True\n        except AssertionError:\n            return False\n    np = sys.modules.get('numpy')\n    if np is not None and isinstance(expected, np.ndarray):\n        # Model and scaler outputs: same shape, and values equal up to float rounding.\n        if not isinstance(actual, np.ndarray) or actual.shape != expected.shape:\n            return False\n        if expected.dtype.kind in 'fc':\n            return bool(np.allclose(actual, expected, rtol=1e-7, atol=1e-9, equal_nan=True))\n        return bool(np.array_equal(actual, expected))\n    if isinstance(expected, float) and isinstance(actual, (int, float)):\n        return math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-12)\n    try:\n        return bool(actual == expected)\n    except Exception:\n        return False\n\n\ndef fail(message):\n    # The learner reads only this message, never the checker's own traceback.\n    print(message, file=sys.stderr)\n    sys.exit(1)\n\n\ndef snapshot(inputs):\n    # Files the run created or changed, such as a saved result CSV.\n    produced = {}\n    for path in Path('.').rglob('*'):\n        if path.is_file() and inputs.get(path.as_posix()) != path.read_bytes():\n            produced[path.as_posix()] = path.read_bytes()\n    return produced\n\n\ndef run_in_fresh_folder(files, text, values):\n    # Each run gets its own copy of the data, so files one run writes never help another.\n    home = os.getcwd()\n    folder = tempfile.mkdtemp(dir=home)\n    try:\n        os.chdir(folder)\n        inputs = {}\n        for path, content in files.items():\n            target = Path(path)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_text(content, encoding='utf8')\n            inputs[target.as_posix()] = target.read_bytes()\n        output, scope = execute(text, values)\n        return output, scope, snapshot(inputs)\n    finally:\n        os.chdir(home)\n        shutil.rmtree(folder, ignore_errors=True)\n\n\ndef describe(case):\n    parts = [name + ' = ' + repr(value) for name, value in case.items() if name != 'files']\n    parts += [path + ' 내용' for path in case.get('files', {})]\n    return ', '.join(parts)\n\n\nMESSAGES = {'__figures__': '그래프의 종류·축 이름·값이 기준 그래프와 달라요. 바뀐 자료로도 같은 그래프를 그리세요.'}\nfor index, case in enumerate(cases):\n    values = {k: v for k, v in case.items() if k != 'files'}\n    files = {**base_files, **case.get('files', {})}\n    expected, wanted, made = run_in_fresh_folder(files, reference, values)\n    changed = '준비 값을 ' + describe(case) + '(으)로 바꾸면 '\n    try:\n        actual, scope, produced = run_in_fresh_folder(files, source, values)\n    except SystemExit:\n        fail('코드가 exit로 중간에 끝났어요. 끝까지 실행되게 하세요.')\n    except BaseException as error:\n        reason = ''.join(traceback.format_exception_only(type(error), error)).strip()\n        fail(('코드를 실행하면' if index == 0 else changed.rstrip()) + ' 오류가 나요.\\n' + reason)\n    if index == 0:\n        problem = '실행 결과가 기대와 달라요.'\n    else:\n        problem = changed + '결과가 달라요.\\n값이나 자료가 바뀌어도 맞는 방법인지 확인하세요.'\n    if actual != expected:\n        fail(problem + '\\n기대 출력:\\n' + expected[-600:] + '\\n실제 출력:\\n' + actual[-600:])\n    for name in names:\n        if name not in scope:\n            fail(name + '에 결과를 담아 주세요.')\n        if not same(scope[name], wanted[name]):\n            fail(problem + '\\n' + MESSAGES.get(name, name + '의 값이 기대와 달라요.'))\n    for path in sorted(made):\n        if path not in produced:\n            fail(problem + '\\n' + path + ' 파일을 저장하지 않았어요.')\n        if produced[path] != made[path]:\n            fail(problem + '\\n저장한 ' + path + ' 파일의 내용이 기대와 달라요.')\nprint('준비 값과 자료를 바꿔도 같은 원리로 계산했어요.')\n"
+    },
+    {
+      "id": "coverage-by-hand",
+      "title": "도전 · 커버리지를 손으로 세어요",
+      "goal": "시험에서는 실행 없이 커버리지를 세어요. 문장과 결정을 따로 세는 게 핵심이에요.\n아래 코드를 실행하지 말고 출력 네 줄을 그대로 적으세요.\n\n종이에 테스트마다 지나간 문장 번호와 결정 결과를 적으며 따라가 보세요.\n?를 지우고 네 줄을 적으세요. print는 값 사이에 빈칸 하나를 넣어요.\n다 적으면 제출해서 맞는지 확인하세요.\n\n```python\n# 실행된 문장 번호와 나온 결정 결과를 모아요.\nran = set()\nseen = set()\n\n\ndef point(score, late):\n    # 문장 1: 받은 점수에서 시작해요.\n    ran.add(1)\n    p = score\n    # 결정 A: 90점 이상인가요?\n    high = score >= 90\n    seen.add(('A', high))\n    if high:\n        # 문장 2: 5점을 더해요.\n        ran.add(2)\n        p = p + 5\n    # 결정 B: 늦게 냈나요?\n    seen.add(('B', late))\n    if late:\n        # 문장 3: 10점을 빼요.\n        ran.add(3)\n        p = p - 10\n    return p\n\n\n# 테스트 두 개를 차례로 돌려요.\nfor score, late in [(95, True), (80, True)]:\n    print('점수', point(score, late))\nprint('문장', len(ran), '/ 3')\nprint('결정', len(seen), '/ 4')\n```",
+      "language": "answer",
+      "entry_file": "answer.txt",
+      "starter_code": "?\n",
+      "solution": "점수 90\n점수 70\n문장 3 / 3\n결정 3 / 4\n",
+      "files": {},
+      "tests": [
+        {
+          "input": "",
+          "expected": "점수 90\n점수 70\n문장 3 / 3\n결정 3 / 4"
+        },
+        {
+          "input": "",
+          "expected": "점수 90\n점수 70\n문장 3/3\n결정 3/4"
+        }
+      ],
+      "web_checks": [],
+      "git_checks": null,
+      "required": false,
+      "hints": [
+        "두 테스트 모두 late가 True예요.",
+        "결정 A는 참·거짓이 다 나왔어요. 결정 B는 어떤가요?"
+      ],
+      "narration": [
+        {
+          "action": "set_code",
+          "code": "?\n",
+          "say": "준비 코드를 먼저 실행해 볼게요."
+        },
+        {
+          "action": "run",
+          "expected_failure": false
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. ?"
+        },
+        {
+          "action": "say",
+          "target": "editor",
+          "text": "조심하세요. 문장 커버리지가 100%라고 결정도 100%인 건 아니에요."
+        },
+        {
+          "action": "patch_code",
+          "before": "?",
+          "after": "점수 90\n점수 70\n문장 3 / 3\n결정 3 / 4",
+          "say": "작은 부분을 바꿔 원리를 확인해요."
+        },
+        {
+          "action": "run"
+        },
+        {
+          "action": "say",
+          "target": "output",
+          "text": "실행 결과를 비교해요. 90 / 점수 70 / 문장 3 / 3 / 결정 3 / 4"
+        },
+        {
+          "action": "submit"
+        }
+      ]
+    }
+  ]
+}
